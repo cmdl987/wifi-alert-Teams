@@ -10,6 +10,9 @@ class network:
 
 
     def get_system_networks(self):
+        """
+        Obtiene información de las redes detectadas por el equipo.
+        """
         if self.OS == "Linux":
             networks = subprocess.check_output(["nmcli", "dev", "wifi"])
             self.networks = networks.decode("utf-8", errors="ignore")            
