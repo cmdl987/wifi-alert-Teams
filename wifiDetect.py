@@ -2,11 +2,14 @@ import subprocess
 import pandas as pd
 
 class network:
-    def __init__(self, sistema):
+    def __init__(self, sistema, path=""):
         self.network_file = ""
+        self.path = path
         self.SSID_list = []
         self.OS = sistema 
         self.get_system_networks()
+        self.create_networks_file()
+        self.lista_redes = get_network_list()
 
 
     def get_system_networks(self):
@@ -21,63 +24,64 @@ class network:
             self.networks = networks.decode("utf-8", errors="ignore")
         return self.networks
 
+
     def create_networks_file(self):             # obtener un return path?
         """
         Limpia el archivo self.networks de caracteres especiales (*, "IN-USE"). 
         Genera un archivo .csv con la información obtenida en self.networks.       
         """
         self.networks_file = open("wifi_networks.csv", "w")
-        car_a_reemp = ["*", "IN-USE"]
-        for car in car_a_reemp:
+        for car in ["*", "IN-USE"]:
             networks_clean = self.networks.replace(car, "")
         self.networks_file.write(networks_clean)
         self.networks_file.close()
 
     def get_networks_file(self):
-        return network_file   # opción para descargar archivo. 
+        return self.network_file   # opción para descargar archivo. 
 
-
-    def show_networks_file(self):               # que path mandarle a leer¿?
+ 
+    def get_network_list(self):
         """
-        Leer el archivo generado con pandas para obtener listado.
-        Genera a su vez una lista con las SSID para utilizar de búsqueda."""
-        self.networks_pd_file = pd.read("/home/koper/Documentos/GitHub/wifi-alarm/wifi_networks.csv",
-                                        sep="\\s+", index_col=False)
-        print(self.networks_pd_file)
-        self.SSID_list = [SSID for SSID in self.networks_pd_file["SSID"]]
-    
-    def select_list(self, SSID):
+        Abre el archivo con nuestras redes anotadas para devolver una lista de las redes.
+        Si el archivo está vacío, nos avisa de que no hay ninguna red anotada.
         """
-        Selecciona por el índice, la SSID que queremos añadir a nuestra
-        lista para que nos salte la alarma.
-        """
+        red_objetivo = open(self.path, "r", encoding="utf-8")
+        self.lista_redes = red_objetivo.read().split()
+        if len(self.lista_redes) < 1:
+            print("Atención, no hay ninguna red Wifi anotada en el archivo redes.txt.")
+            return None
+        else:
+            return self.lista_redes
 
-
-
+    #ACABAR ESTAS LINEAS DE ABAJO.
+    def check_network(self):
+        for red in lista_redes:
+            if red in launcher:
+            print("La red {} se encuentra conectada!".format(red))
 
 #####
 objetivo = network("Linux")
 datos_wifi = objetivo.get_system_networks()   # devuelve un str.
 #print(datos_wifi)
 
+"""
 archivo_wifi = open("redes_wifi.csv", "w")
-car_a_reemp = ["*", "IN-USE"]
-for car in car_a_reemp:
+for car in ["*", "IN-USE"]:
     datos_wifi = datos_wifi.replace(car, " ")
 archivo_wifi.write(datos_wifi)
 archivo_wifi.close()
+"""
+df = pd.read_csv("/home/koper/Documentos/GitHub/wifi-alarm/redes_wifi.csv", 
+                           sep="\s+", index_col=False, 
+                           usecols=[1])
 
-archivo_wifi = pd.read_csv("/home/koper/Documentos/GitHub/wifi-alarm/redes_wifi.csv", 
-                           sep="\s+", index_col=False)
-
-print(archivo_wifi["SSID"][0])
+print(df)
+"""
+print(df["SSID"][0])
 lista_SSID = [i for i in archivo_wifi["SSID"]]
 print(lista_SSID)
 if "THOM_ONO4601" in lista_SSID:
     print("True")
 else: 
     print("False")
-
-
-
-
+"""
