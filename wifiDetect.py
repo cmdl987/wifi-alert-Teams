@@ -1,44 +1,64 @@
 import subprocess
-import pandas as pd
+from pprint import pprint
 
 class WifiDetector:
     def __init__(self, my_os, path=""):
         self.network_file = ""
+        self.network_list = []
         self.path = path
         self.SSID_list = []
         self.OS = my_os 
-        #self.networks = self.detect_networks()
         #self.create_networks_file()
-        #self.network_list = self.get_network_list()
 
 
     def detect_networks(self):
         """
-        Obtiene información de las redes detectadas por el equipo.
+        Obtiene información de las redes detectadas por el equipo,
+        según el SO pasado en la clase.
         """
         if self.OS == "Linux":
-            networks = subprocess.check_output(["nmcli", "dev", "wifi"])
-            networks = networks.decode("utf-8", errors="ignore")            
+            networks_info = subprocess.check_output(["nmcli", "dev", "wifi"])
+            networks_info = networks_info.decode("utf-8", errors="ignore")            
         else:
-            networks = subprocess.check_output(['netsh', 'wlan', 'show', "networks"])
-            networks = networks.decode("utf-8", errors="ignore")
-        return networks
+            networks_info = subprocess.check_output(['netsh', 'wlan', 'show', "networks"])
+            networks_info = networks_info.decode("utf-8", errors="ignore")
+        
+        return networks_info
 
 
-    def create_networks_file(self):             # obtener un return path?
+    def list_generator(self):
         """
-        Limpia el archivo self.networks de caracteres especiales (*, "IN-USE"). 
-        Genera un archivo .csv con la información obtenida en self.networks.       
+        Llama a la función detect_networks() para obtener toda la información 
+        de redes, de la cual obtener el nombre de los SSID y guardarlos
+        en la lista network_list.
         """
-        self.networks_file = open("wifi_networks.csv", "w")
-        for car in ["*", "IN-USE"]:
-            networks_clean = self.networks.replace(car, "")
-        self.networks_file.write(networks_clean)
-        self.networks_file.close()
+        networks = self.detect_networks().splitlines()
+        # Itera por cada línea de la variable networks para guardar el SSID.
+        for ssid_line in networks:
+            if "BSSID" not in ssid_line:
+                ssid = ssid_line.replace("*", "").split()
+                self.network_list.append(ssid[1])
+        self.network_list = list(set(self.network_list))
+
+        return self.network_list
 
 
-    def get_networks_file(self):
-        return self.network_file   # opción para descargar archivo. 
+    # def create_networks_file(self):             # obtener un return path?
+    #     """
+    #     Limpia el archivo self.networks de caracteres especiales (*, "IN-USE"). 
+    #     Genera un archivo .csv con la información obtenida en self.networks.       
+    #     """
+    #     self.networks_file = open("wifi_networks.csv", "w")
+    #     for car in ["*", "IN-USE"]:
+    #         networks_clean = self.networks.replace(car, "")
+    #     self.networks_file.write(networks_clean)
+    #     self.networks_file.close()
+
+
+    def get_networks_info(self):
+        print("Se han detectado {} redes wi-fi:".format(len(self.network_list)))
+        for index, ssid in enumerate(self.network_list):
+            print("\t", index, "\t", ssid)
 
  
     def get_network_list(self):
@@ -55,46 +75,16 @@ class WifiDetector:
             return network_list
 
 
-    # #ACABAR ESTAS LINEAS DE ABAJO.
-    # def check_network(self):
-    #     for red in lista_redes:
-    #         if red in launcher:
-    #         print("La red {} se encuentra conectada!".format(red))
-
-
-
+    def check_network(self, target_network):
+        if target_network in self.network_list:
+            print("La red {} se encuentra conectada!".format(target_network))
 
 
 #####
+#TEST
+#####
 file_path = "/home/cmdl987/GitHub/wifi-alarm/redes.txt"
 launcher = WifiDetector("Linux", file_path)    
-wifi_network = launcher.detect_networks()   # devuelve un str.
-lines = wifi_network.splitlines()
-for line in lines:
-    linea = line.split()
-    print(linea[1])
-
-#print(wifi_network)
-#print(datos_wifi)
-
-# """
-# archivo_wifi = open("redes_wifi.csv", "w")
-# for car in ["*", "IN-USE"]:
-#     datos_wifi = datos_wifi.replace(car, " ")
-# archivo_wifi.write(datos_wifi)
-# archivo_wifi.close()
-# """
-# df = pd.read_csv("/home/koper/Documentos/GitHub/wifi-alarm/redes_wifi.csv", 
-#                            sep="\s+", index_col=False, 
-#                            usecols=[1])
-
-# print(df)
-# """
-# print(df["SSID"][0])
-# lista_SSID = [i for i in archivo_wifi["SSID"]]
-# print(lista_SSID)
-# if "THOM_ONO4601" in lista_SSID:
-#     print("True")
-# else: 
-#     print("False")
-# """
+wifi_networks = launcher.list_generator()
+launcher.get_networks_info()
+launcher.check_network("Croqueta&Empanadilla")
