@@ -1,13 +1,19 @@
 import subprocess
-from pprint import pprint
+import requests
 
 class WifiDetector:
-    def __init__(self, my_os, path=""):
+    def __init__(self, my_os, path="", webhook=""):
         self.network_file = ""
         self.network_list = []
         self.path = path
         self.SSID_list = []
-        self.OS = my_os 
+        self.OS = my_os
+        self.webhook = webhook 
+        self.title = "ALARMA WIFI"
+        self.content = """
+            Ojito, el simulador está  <i>encendido</i>.<br>
+            😍
+            """
         #self.create_networks_file()
 
 
@@ -35,7 +41,7 @@ class WifiDetector:
         networks = self.detect_networks().splitlines()
         # Itera por cada línea de la variable networks para guardar el SSID.
         for ssid_line in networks:
-            if "BSSID" not in ssid_line:
+            if "BSSID" not in ssid_line and "--" not in ssid_line:
                 ssid = ssid_line.replace("*", "").split()
                 self.network_list.append(ssid[1])
         self.network_list = list(set(self.network_list))
@@ -74,17 +80,35 @@ class WifiDetector:
         else:
             return network_list
 
+    def send_teams(self, webhook_url:str, content:str, title:str, color:str="000000") -> int:
+        response = requests.post(
+            url=webhook_url,
+            headers={"Content-Type": "application/json"},
+            json={
+                "themeColor": color,
+                "summary": title,
+                "sections": [{
+                    "activityTitle": title,
+                    "activitySubtitle": content
+                }],
+            },
+        )
+        return response.status_code   # Debe ser 200
+
 
     def check_network(self, target_network):
         if target_network in self.network_list:
             print("La red {} se encuentra conectada!".format(target_network))
+            self.send_teams(self.webhook, self.content, self.title)
+
 
 
 #####
 #TEST
 #####
+webhook = "https://myuax.webhook.office.com/webhookb2/2ef9a78a-7c32-49da-be6d-5fc4968811cd@8344d72d-e21b-485a-b9a1-52078e79010e/IncomingWebhook/43d6a479f4cb4db0842af2fd763b690b/14d96f44-0bf8-4c09-859d-68edc4681dd5"
 file_path = "/home/cmdl987/GitHub/wifi-alarm/redes.txt"
-launcher = WifiDetector("Linux", file_path)    
+launcher = WifiDetector("Linux", file_path, webhook)    
 wifi_networks = launcher.list_generator()
 launcher.get_networks_info()
-launcher.check_network("Croqueta&Empanadilla")
+launcher.check_network("MMP0366")
