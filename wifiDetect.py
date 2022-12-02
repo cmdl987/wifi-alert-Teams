@@ -111,4 +111,4 @@ file_path = "/home/cmdl987/GitHub/wifi-alarm/redes.txt"
 launcher = WifiDetector("Linux", file_path, webhook)    
 wifi_networks = launcher.list_generator()
 launcher.get_networks_info()
-launcher.check_network("MMP0366")
+launcher.check_network("MMP0366"
