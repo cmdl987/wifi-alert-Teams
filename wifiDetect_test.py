@@ -1,18 +1,13 @@
 import subprocess
-import platform
-
 import requests
 
 class WifiDetector:
-    def __init__(self, data_config):
-        self.selected_SSID = ""
-        self.selected_time = ""
-        self.selected_webhook = ""
-        self.OS = self.os_detector()
-        self.get_data_config(data_config)
+    def __init__(self, my_os, path="", webhook=""):
         self.network_file = ""
         self.network_list = []
+        self.path = path
         self.SSID_list = []
+        self.OS = my_os
         self.webhook = webhook 
         self.title = "ALARMA WIFI"
         self.content = """
@@ -20,13 +15,6 @@ class WifiDetector:
             😍
             """
         #self.create_networks_file()
-
-    def os_detector(self):
-        """
-        Comprueba el sistema operativo sobre el que se está ejecutando el
-        módulo.
-        """
-        return platform.system()
 
 
     def detect_networks(self):
@@ -43,7 +31,7 @@ class WifiDetector:
         return networks_info
 
 
-    def network_detector(self):
+    def list_generator(self):
         """
         Llama a la función detect_networks() para obtener toda la información 
         de redes, de la cual obtener el nombre de los SSID y guardarlos
@@ -55,38 +43,42 @@ class WifiDetector:
             if "BSSID" not in ssid_line and "--" not in ssid_line:
                 ssid = ssid_line.replace("*", "").split()
                 self.network_list.append(ssid[1])
-        # Eliminamos posibles duplicados (diferentes AP con misma red).
         self.network_list = list(set(self.network_list))
 
         return self.network_list
 
 
-    def get_data_config(self, data_config):
-        self.selected_SSID = data_config[0]
-        self.selected_time = data_config[1]
-        self.selected_webhook = data_config[2]
-        
-    
-    def get_data_config(self):
-        """
-        Devuelve en pantalla los resultados para la última configuración cargada.
-        """
-        print("-"*70)
-        print("ÚLTIMA CONFIGURACIÓN USADA")
-        print("\tSSID: {ssid}\tAlarma: {alarm}\tWebhook: {webh}".format(
-                                ssid=self.selected_SSID,
-                                alarm=self.selected_time,
-                                webh="..."+self.selected_webhook[:-5]
-                                ))
-        print("-"*70)
+    # def create_networks_file(self):             # obtener un return path?
+    #     """
+    #     Limpia el archivo self.networks de caracteres especiales (*, "IN-USE"). 
+    #     Genera un archivo .csv con la información obtenida en self.networks.       
+    #     """
+    #     self.networks_file = open("wifi_networks.csv", "w")
+    #     for car in ["*", "IN-USE"]:
+    #         networks_clean = self.networks.replace(car, "")
+    #     self.networks_file.write(networks_clean)
+    #     self.networks_file.close()
 
 
     def get_networks_info(self):
-        print("Se han detectado {} redes wi-fi:".format(len(self.network_detector)))
+        print("Se han detectado {} redes wi-fi:".format(len(self.network_list)))
         for index, ssid in enumerate(self.network_list):
             print("\t", index, "\t", ssid)
 
  
+    def get_network_list(self):
+        """
+        Abre el archivo con nuestras redes anotadas para devolver una lista de las redes.
+        Si el archivo está vacío, nos avisa de que no hay ninguna red anotada.
+        """
+        network_target = open(self.path, "r", encoding="utf-8")
+        network_list = network_target.read().split()
+        if len(network_list) < 1:
+            print("Atención, no hay ninguna red Wifi anotada en el archivo redes.txt.")
+            return None
+        else:
+            return network_list
+
 
     def send_teams(self, webhook_url:str, content:str, title:str, color:str="000000") -> int:
         response = requests.post(
@@ -105,12 +97,6 @@ class WifiDetector:
 
 
     def check_network(self, target_network):
-        """
-        Tras detectar las redes existentes, comprueba que nuestras redes objetivo
-        estén en la lista de redes detectadas. De ser correcto, envía mensaje
-        por teams. 
-        """
-        self.network_detector()
         if target_network in self.network_list:
             print("La red {} se encuentra conectada!".format(target_network))
             self.send_teams(self.webhook, self.content, self.title)
