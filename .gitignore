@@ -27,7 +27,6 @@ share/python-wheels/
 MANIFEST
 
 # Config files
-.env
 .csv
 
 # PyInstaller
