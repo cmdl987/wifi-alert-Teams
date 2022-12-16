@@ -4,7 +4,7 @@ import time
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 
-time_now = datetime.now()
+time_now = datetime.now().strftime("%Y-%m-%d %H:%M")
 print(time_now)
 
 def tarea():
@@ -16,7 +16,7 @@ def tasks():
     scheduler.add_job(tarea, "cron", hour=16, minute=22, second=50)
     scheduler.start()
 
-tasks()
+#tasks()
 
 # import time
 # from apscheduler.schedulers.blocking import BlockingScheduler

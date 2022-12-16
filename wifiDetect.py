@@ -1,3 +1,11 @@
+'''
+2) LOS VALORES DEL CONTENT (MENSAJE A ENVIAR POR TEAMS) QUIERO QUE ESTÉ EN 
+UN ARCHIVO .TXT, PARA QUE SE PUEDA EDITAR Y LEER DIRECTAMENTE DESDE AHÍ.
+OJO CON LOS VALORES DE VARIABLES, PARA NOMBRAR LAS REDES {}. 
+HAY QUE HACER PRUEBAS.
+'''
+
+
 import subprocess
 import platform
 
@@ -6,18 +14,24 @@ import requests
 
 class WifiDetector:
     def __init__(self, data_config):
-        self.selected_SSID = ""
-        self.selected_time = ""
-        self.selected_webhook = ""
+        self.selected_SSID = data_config["last_SSID"]
+        self.selected_time = data_config["last_time_config"]
+        self.selected_webhook = data_config["last_webhook"]
+        self.content = self.content_reader()
         self.OS = self.os_detector()
-        self.get_data_config(data_config)
         self.network_list = []
         self.SSID_list = []
         self.title = "ALARMA WIFI"
-        self.content = """
-            Ojito, el simulador está  <i>encendido</i>.<br>
-            😍
-            """
+        
+
+    def content_reader(self):
+        """
+        Lee el contenido de content.txt, donde se encuentra el mensaje 
+        que se va a enviar a través del grupo de Teams.
+        """
+        with open ("content.txt", "r") as file:
+            content = file.read()
+            return content
 
     def os_detector(self):
         """
@@ -55,11 +69,6 @@ class WifiDetector:
         self.network_list = list(set(self.network_list))
         return self.network_list
 
-    def get_data_config(self, data_config):
-        """Genera atributos de clase con los datos pasados a la clase de la última configuración disponible."""
-        self.selected_SSID = data_config[0]
-        self.selected_time = data_config[1]
-        self.selected_webhook = data_config[2]
           
     def __str__(self):
         """
