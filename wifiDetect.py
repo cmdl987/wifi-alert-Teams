@@ -8,44 +8,46 @@ HAY QUE HACER PRUEBAS.
 
 import subprocess
 import platform
+import json
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
+
+class TeamsWebhookException(Exception):
+    """
+    Excepción propia para obtener error tras fallo en llamada a nuestro
+    webhook. Aparece cuando la respuesta del requests.post es diferente a 200.
+    """
 
 class WifiDetector:
     def __init__(self, data_config):
         self.selected_SSID = data_config["last_SSID"]
         self.selected_time = data_config["last_time_config"]
         self.selected_webhook = data_config["last_webhook"]
-        self.content = self.content_reader()
-        self.OS = self.os_detector()
+        self.target_ssid = ""
         self.network_list = []
         self.SSID_list = []
-        self.title = "ALARMA WIFI"
+        # self.content = self.content_reader()
+        self.content = self.content_reader()
         
-
+      
     def content_reader(self):
         """
-        Lee el contenido de content.txt, donde se encuentra el mensaje 
-        que se va a enviar a través del grupo de Teams.
+        Lee el contenido de content.json, donde se encuentra la información
+        del mensaje que se va a enviar a través del grupo de Teams.
         """
-        with open ("content.txt", "r") as file:
-            content = file.read()
-            return content
-
-    def os_detector(self):
-        """
-        Comprueba el sistema operativo sobre el que se está ejecutando el
-        módulo.
-        """
-        return platform.system()
+        with open ("content.json", "r") as file:
+            content = json.load(file)
+        
+        return content
 
     def detect_networks(self):
         """
         Obtiene información de las redes detectadas por el equipo,
-        según el SO pasado en la clase.
+        según el sistema operativo.
         """
-        if self.OS == "Linux":
+        user_OS = platform.system()
+        if user_OS == "Linux":
             networks_info = subprocess.check_output(["nmcli", "dev", "wifi"])
             networks_info = networks_info.decode("utf-8", errors="ignore")            
         else:
@@ -95,20 +97,16 @@ class WifiDetector:
     def send_teams(self, webhook_url:str, content:str, title:str, color:str="000000") -> int:
         """
         Recibe los parámetros webhook_url, content, title y color, para realizar el envío de mensaje a través de Teams.        
-        """
+        """       
         response = requests.post(
             url=webhook_url,
-            headers={"Content-Type": "application/json"},
-            json={
-                "themeColor": color,
-                "summary": title,
-                "sections": [{
-                    "activityTitle": title,
-                    "activitySubtitle": content
-                }],
-            },
-        )
-        return response.status_code   # Debe ser 200
+            headers={"Content-Type": "application/vnd.microsoft.card.hero"},
+            json=content,
+            )
+        if response.status_code == 200:
+            return True
+        else: 
+            raise TeamsWebhookException(response.reason)
 
     def check_network(self):
         """
@@ -120,7 +118,9 @@ class WifiDetector:
         for target_ssid in self.selected_SSID:
             if target_ssid in ssid_list:
                 print("La red {} se encuentra conectada!".format(target_ssid))
+                self.target_ssid = target_ssid
                 self.send_teams(self.selected_webhook, self.content, self.title)
+
             else:
                 print("No se han encontrado las redes {ssid}".format(
                                                     ssid=target_ssid),
