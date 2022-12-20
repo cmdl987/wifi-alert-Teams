@@ -8,48 +8,51 @@ from datetime import datetime
 class ReadData:
     def __init__(self, path="config.csv"):
         self.path = path
-        self.data_config = self.get_data()
+        self.data_config = None 
+        self.set_data()
+
+    def get_data_config(self):
+        return self.data_config
 
     def add_new_data(self):
         """
         Genera una nueva línea de datos, abriendo el archivo, preguntando al
         usuario, y guardando los datos en nuestro archivo .csv.
         """
+        timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M"))
+        
+        # Assigns a user input to user_ssid
+        user_ssid = input("Introduzca SSID a buscar. Si es más de una "
+                            "sepárela con ','.\n").strip().replace(" ", "")
+        
+        while True:
+            # Assigns a user input to user_time and checks if the input is an integer.
+            user_time = str(input("Introduzca la hora en formato HH:MM en que "
+                            "quiere que se detecte la red.\n"))
+            try: 
+                user_hour = int(user_time[:2])
+                user_min = int(user_time[-2:])
+                if user_hour > 23 or user_min > 59:
+                    raise ValueError("ERROR. This is not a valid time format.")
+                else: 
+                    break
+                    
+            except ValueError:
+                print("ERROR. This is not a valid time format.")
+
+        # Assigns a input to user_webhook.
+        user_webhook = str(input("Introduzca el webhook copiado de su grupo "
+                            "de Teams.\n"))
+
+        # Combine all user inputs in order to write the data into the file.
+        user_data = (timestamp, user_ssid, user_time, user_webhook)
+        user_data = ";".join(user_data)
+        
+        # Write down all the user_data into config.csv file.
         with open(self.path, "a") as file:
-            #file.write("\n")
-            timestamp = str(datetime.now().strftime("%Y-%m-%d %H:%M"))
-            
-            # Assigns a user input to user_ssid
-            user_ssid = input("Introduzca SSID a buscar. Si es más de una "
-                                "sepárela con ','.\n").strip().replace(" ", "")
-            
-
-            while True:
-                # Assigns a user input to user_time and checks if the input is an integer.
-                user_time = str(input("Introduzca la hora en formato HH:MM en que "
-                                "quiere que se detecte la red.\n"))
-                try: 
-                    user_hour = int(user_time[:2])
-                    user_min = int(user_time[-2:])
-                    print(f"hora: {user_hour}, minutos: {user_min}")
-                    if user_hour > 23 or user_min > 59:
-                        raise ValueError("ERROR. This is not a valid time format.")
-                    else: 
-                        break
-                        
-                
-                except ValueError:
-                    print("ERROR. This is not a valid time format.")
-
-            
-            # Assigns a input to user_webhook.
-            user_webhook = str(input("Introduzca el webhook copiado de su grupo "
-                                "de Teams.\n"))
-
-            # Combine all user inputs in order to write the data into the file.
-            user_data = (timestamp, user_ssid, user_time, user_webhook)
-            user_data = ";".join(user_data)
-            file.writelines([user_data],"\n")
+            file.write(user_data+"\n")
+        
+        self.set_data()
 
     
     def generate_csv(self):
@@ -59,24 +62,26 @@ class ReadData:
         #print("Generado nuevo archivo.")
         with open(self.path, "w") as file:
             header = "ts; SSID_list; alarm_time; web_hook\n"
-            file.writelines([header])
-        self.add_new_data()
+            file.write(header)
 
 
-    def get_data(self):
+    def set_data(self):
         """
-        Abrimos el archivo config.csv para obtener los parámetros.
+        Abrimos el archivo config.csv para configurar los parámetros.
         """
         try:
-            with open(self.path) as file:
+            with open(self.path, "r") as file:
                 # Lee el archivo
                 lines = file.readlines() 
 
-                # Checks the lenght of config.csv. In case it is minor than 2, 
-                # launch add_new_data method.              
-                if len(lines) < 2:
+            # Checks the lenght of config.csv. In case it is minor than 2, 
+            # launch add_new_data method.              
+            while True:
+                if len(lines) == 1:
                     print("There is no previous configuration available.")
                     self.add_new_data()
+                    break
+
                 else:   
                     # Select config.csv last line with last parameters.
                     last_line = lines[-1].split(";")
@@ -109,19 +114,17 @@ class ReadData:
                         user_selection = input("¿Desea utilizar la "
                                                 "configuración actual? Y/N. ")
                         if user_selection in ["Y", "y"]:
-                            return data_config
+                            self.data_config = data_config
 
                         elif user_selection in ["N", "n"]:
                             print("Seleccione nueva configuración.")
                             self.add_new_data()
-                            self.get_data()
+                    
+                break
 
-                            
         except FileNotFoundError:
             print("Archivo no encontrado.")
             self.generate_csv()
-
-
-# string con el path a nuestro .txt con las redes que queremos que busque.
-#file_path = "/home/cmdl987/GitHub/wifi-alarm/config2.csv"
-#last_data_config = ReadData()
+            self.set_data()        
+        
+        #return data_config
