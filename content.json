@@ -6,13 +6,13 @@
   "sections": [{
       "activityTitle": "El simulador SIMULATOR_NAME está encendido",
       "activitySubtitle": "en Hospital Virtual de Simulación",
-      "activityImage": "https://pbs.twimg.com/profile_images/3647943215/d7f12830b3c17a5a9e4afcc370e3a37e_400x400.jpeg",
+      "activityImage": "https://i.imgur.com/Z7wwX6l.jpg",
       "facts": [{
           "name": "Detectado",
           "value": "FECHA"
       }, {
           "name": "Estado",
-          "value": "Red TARGET_NETWORK **encendida**"
+          "value": "Red encendida"
       }],
       "markdown": true
   }],

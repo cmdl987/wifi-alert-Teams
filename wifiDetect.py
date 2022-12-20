@@ -23,15 +23,14 @@ class WifiDetector:
     def __init__(self, data_config):
         self.selected_SSID = data_config["last_SSID"]
         self.selected_time = data_config["last_time_config"]
-        self.selected_webhook = data_config["last_webhook"]
+        self.selected_webhook = str(data_config["last_webhook"]).strip()
         self.target_ssid = ""
+        self.content = None
         self.network_list = []
         self.SSID_list = []
-        # self.content = self.content_reader()
-        self.content = self.content_reader()
-        
+
       
-    def content_reader(self):
+    def set_content(self, target_ssid):
         """
         Lee el contenido de content.json, donde se encuentra la información
         del mensaje que se va a enviar a través del grupo de Teams.
@@ -39,6 +38,20 @@ class WifiDetector:
         with open ("content.json", "r") as file:
             content = json.load(file)
         
+        # Checks the target SSID and change the title for every given SSID.
+        if target_ssid == "MMP":
+            content["sections"][0]["activityTitle"] = "El simulador **METI** está encendido."
+            content["sections"][0]["activityTitle"] = "https://i.imgur.com/2kLtKTy.jpg"
+
+        elif target_ssid == "mfs2135":
+            content["sections"][0]["activityTitle"] = "El simulador **LUCINA** está encendido."
+            content["sections"][0]["activityTitle"] = "https://i.imgur.com/Z7wwX6l.jpg."
+            
+        content["sections"][0]["facts"][0]["value"] = self.selected_time
+        content["sections"][0]["facts"][1]["value"] = target_ssid
+        print("*"*50)
+        print(content)
+        print("*"*50)
         return content
 
     def detect_networks(self):
@@ -94,12 +107,13 @@ class WifiDetector:
         for index, ssid in enumerate(self.network_list):
             print("\t", index, "\t", ssid)
 
-    def send_teams(self, webhook_url:str, content:str, title:str, color:str="000000") -> int:
+    def send_teams(self, webhook, content):
         """
-        Recibe los parámetros webhook_url, content, title y color, para realizar el envío de mensaje a través de Teams.        
-        """       
+        Ejecuta el envío del aviso por Teams, a partir de los parámetros de clase
+        self.selected_webhook y self.content.        
+        """ 
         response = requests.post(
-            url=webhook_url,
+            url=webhook,
             headers={"Content-Type": "application/vnd.microsoft.card.hero"},
             json=content,
             )
@@ -117,28 +131,22 @@ class WifiDetector:
         ssid_list = self.tolist_network()
         for target_ssid in self.selected_SSID:
             if target_ssid in ssid_list:
-                print("La red {} se encuentra conectada!".format(target_ssid))
-                self.target_ssid = target_ssid
-                self.send_teams(self.selected_webhook, self.content, self.title)
+                print(f"La red {target_ssid} se encuentra conectada!")
+                self.send_teams(self.selected_webhook, self.set_content(target_ssid))
 
             else:
-                print("No se han encontrado las redes {ssid}".format(
-                                                    ssid=target_ssid),
-                                                )
+                print(f"No se han encontrado la red {target_ssid}")
 
     def run_scheduler(self):
         """
         Método que ejecuta la tarea en el tiempo indicado.
         """
-        selected_hour = int(self.selected_time[:3])
+        selected_hour = int(self.selected_time[:2])
         selected_min = int(self.selected_time[-2:])
         scheduler = BlockingScheduler()
         scheduler.add_job(self.check_network, "cron", 
                         hour=selected_hour, 
                         minute=selected_min,
-                        second=00,      # Para hacer pruebas. Eliminar.
                         )
-        print("Scheduler running. Next check: {hora}.".format(
-                                                    hora=self.selected_time),
-                                                    )
+        print(f"Scheduler running. Next check: {self.selected_time}.")
         scheduler.start()
