@@ -3,13 +3,15 @@ Este módulo se encarga de leer los datos almacenados en la última configuraci�
 dentro del archivo config.csv
 '''
 from datetime import datetime
-
+from pathlib import Path
 
 class ReadData:
-    def __init__(self, path="config.csv"):
-        self.path = path
+    def __init__(self, CONFIG_PATH="config.csv", LOG_PATH="logs.csv" ):
+        self.config_path = CONFIG_PATH
+        self.log_path = LOG_PATH
         self.data_config = None 
         self.set_data()
+        self.generate_log_file()
 
     def get_data_config(self):
         return self.data_config
@@ -49,18 +51,31 @@ class ReadData:
         user_data = ";".join(user_data)
         
         # Write down all the user_data into config.csv file.
-        with open(self.path, "a") as file:
+        with open(self.config_path, "a") as file:
             file.write(user_data+"\n")
         
         self.set_data()
 
+    def generate_log_file(self):
+        """
+        Genera un nuevo archivo de registro de logs en el path dado, con ese header.
+        """
+        #print("Generado nuevo archivo.")
+        path = Path(self.log_path)   
+        if path.is_file() == False:
+            with open(self.log_path, "w") as log_file:
+                header = "Config_time;Date;Time_alarm;SSIDs_target;SSIDs_detected;"\
+                        "Webhook;msg_delivered\n"                
+                log_file.writelines(header)
+
+
     
-    def generate_csv(self):
+    def generate_config_file(self):
         """
         Genera un nuevo archivo .csv en el path dado con ese header.
         """
         #print("Generado nuevo archivo.")
-        with open(self.path, "w") as file:
+        with open(self.config_path, "w") as file:
             header = "ts; SSID_list; alarm_time; web_hook\n"
             file.write(header)
 
@@ -70,7 +85,7 @@ class ReadData:
         Abrimos el archivo config.csv para configurar los parámetros.
         """
         try:
-            with open(self.path, "r") as file:
+            with open(self.config_path, "r") as file:
                 # Lee el archivo
                 lines = file.readlines() 
 
@@ -124,7 +139,6 @@ class ReadData:
 
         except FileNotFoundError:
             print("Archivo no encontrado.")
-            self.generate_csv()
+            self.generate_config_file()
             self.set_data()        
         
-        #return data_config

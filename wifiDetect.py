@@ -1,11 +1,10 @@
 '''
-2) LOS VALORES DEL CONTENT (MENSAJE A ENVIAR POR TEAMS) QUIERO QUE ESTÉ EN 
-UN ARCHIVO .TXT, PARA QUE SE PUEDA EDITAR Y LEER DIRECTAMENTE DESDE AHÍ.
-OJO CON LOS VALORES DE VARIABLES, PARA NOMBRAR LAS REDES {}. 
-HAY QUE HACER PRUEBAS.
+3) FALTA METER EN LOGGER() EL TS DE LA VEZ QUE FUÉ CONFIGURADO. EN HEADER YA
+ESTÁ INCLUIDO.
+
 '''
-
-
+from datetime import datetime
+from pathlib import Path
 import subprocess
 import platform
 import json
@@ -22,15 +21,19 @@ class TeamsWebhookException(Exception):
     webhook. Aparece cuando la respuesta del requests.post es diferente a 200.
     """
 
+
 class WifiDetector:
     def __init__(self, data_config):
         self.selected_SSID = data_config["last_SSID"]
         self.selected_time = data_config["last_time_config"]
         self.selected_webhook = str(data_config["last_webhook"]).strip()
+        self.detected_ssids = []
         self.target_ssid = ""
+        self.msg_delivered = None
+        self.timestamp = str(datetime.now().strftime("%Y-%m-%d"))
         self.content = None
         self.network_list = []
-        self.SSID_list = []
+        self.ssid_list = []  
 
       
     def set_content(self, target_ssid):
@@ -85,7 +88,6 @@ class WifiDetector:
         # Eliminamos posibles duplicados (diferentes AP con misma red).
         self.network_list = list(set(self.network_list))
         return self.network_list
-
           
     def __str__(self):
         """
@@ -120,9 +122,39 @@ class WifiDetector:
             json=content,
             )
         if response.status_code == 200:
+            self.msg_delivered = True
             return True
         else: 
+            self.msg_delivered = False
             raise TeamsWebhookException(response.reason)
+        
+
+    def logger(self, detected_ssids="", LOG_PATH="logs.csv"):
+        """
+        Comprueba que existe el archivo logs.csv. Si no existe lo crea y si 
+        existe, recoge en este archivo los resultados de la última comprobación. 
+        """
+        with open(LOG_PATH, "a") as path_file:
+            data_log = (self.selected_ self.timestamp, self.selected_time, str(self.selected_SSID), 
+                        str(detected_ssids), self.selected_webhook, 
+                        str(self.msg_delivered), 
+                        )
+            log_line = ";".join(data_log)
+            path_file.write(log_line+"\n")        
+        # path = Path(LOG_PATH)   
+        # if path.is_file():
+        #     with open(LOG_PATH, "a") as path_file:
+        #         data_log = (self.timestamp, self.selected_time, str(self.selected_SSID), 
+        #                     str(detected_ssids), self.selected_webhook, 
+        #                     str(self.msg_delivered), 
+        #                     )
+        #         log_line = ";".join(data_log)
+        #         path_file.write(log_line+"\n")
+        # else:
+        #     with open(LOG_PATH, "w") as path_file:
+        #         header = "Date;Time_alarm;SSIDs_target;SSIDs_detected;"\
+        #                 "Webhook;msg_delivered\n"                
+        #         path_file.writelines(header)
 
     def check_network(self):
         """
@@ -130,14 +162,29 @@ class WifiDetector:
         estén en la lista de redes detectadas. De ser correcto, envía mensaje
         por teams. 
         """
-        ssid_list = self.tolist_network()
+        self.ssid_list = self.tolist_network()
+        detected_ssids = []
+
+        # Itera por cada una de las SSID que queremos comprobar que están encendidas.
         for target_ssid in self.selected_SSID:
-            if target_ssid in ssid_list:
+
+            # Guarda en lista si la SSID que buscamos está en la lista de SSIDs
+            if target_ssid in self.ssid_list:
                 print(f"La red {target_ssid} se encuentra conectada!")
-                self.send_teams(self.selected_webhook, self.set_content(target_ssid))
+                detected_ssids.append(target_ssid)            
+                
+                # Manda aviso por Teams que la SSID está activada.
+                try:
+                    self.send_teams(self.selected_webhook, self.set_content(target_ssid))  
+                
+                except TeamsWebhookException:
+                    print("No se pudo enviar mensaje a través de Teams.")
 
             else:
                 print(f"No se han encontrado la red {target_ssid}")
+        
+        # Registra los logs con las SSID detectadas.
+        self.logger(detected_ssids)
 
     def run_scheduler(self):
         """

@@ -4,7 +4,7 @@
   "themeColor": "0076D7",
   "summary": "Aviso redes Wi-Fi",
   "sections": [{
-      "activityTitle": "El simulador SIMULATOR_NAME está encendido",
+      "activityTitle": "Un simulador se encuentra encendido",
       "activitySubtitle": "en Hospital Virtual de Simulación, UAX.",
       "activityImage": "https://i.imgur.com/Z7wwX6l.jpg",
       "facts": [{
