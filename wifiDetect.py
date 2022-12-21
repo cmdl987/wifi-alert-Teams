@@ -1,6 +1,6 @@
 '''
-3) FALTA METER EN LOGGER() EL TS DE LA VEZ QUE FUÉ CONFIGURADO. EN HEADER YA
-ESTÁ INCLUIDO.
+FALTA BUSCAR COMO CONFIGURAR EL MÉTODO CRON PARA QUE BUSQUE TODOS LOS DÍAS A ESA
+MISMA HORA.
 
 '''
 from datetime import datetime
@@ -24,9 +24,12 @@ class TeamsWebhookException(Exception):
 
 class WifiDetector:
     def __init__(self, data_config):
+        self.last_config_ts = data_config["last_ts"]
         self.selected_SSID = data_config["last_SSID"]
         self.selected_time = data_config["last_time_config"]
         self.selected_webhook = str(data_config["last_webhook"]).strip()
+        self.log_path = "logs.csv"
+        self.config_path = "config.csv"
         self.detected_ssids = []
         self.target_ssid = ""
         self.msg_delivered = None
@@ -54,9 +57,6 @@ class WifiDetector:
             content["sections"][0]["activityImage"] = "https://i.imgur.com/Z7wwX6l.jpg."
             
         content["sections"][0]["facts"][0]["value"] = target_ssid
-        print("*"*50)
-        print(content)
-        print("*"*50)
         return content
 
     def detect_networks(self):
@@ -129,15 +129,15 @@ class WifiDetector:
             raise TeamsWebhookException(response.reason)
         
 
-    def logger(self, detected_ssids="", LOG_PATH="logs.csv"):
+    def logger(self, detected_ssids):
         """
         Comprueba que existe el archivo logs.csv. Si no existe lo crea y si 
         existe, recoge en este archivo los resultados de la última comprobación. 
         """
-        with open(LOG_PATH, "a") as path_file:
-            data_log = (self.selected_ self.timestamp, self.selected_time, str(self.selected_SSID), 
-                        str(detected_ssids), self.selected_webhook, 
-                        str(self.msg_delivered), 
+        with open(self.log_path, "a") as path_file:
+            data_log = (self.last_config_ts, self.timestamp, self.selected_time, 
+                        str(self.selected_SSID), str(detected_ssids), 
+                        self.selected_webhook, str(self.msg_delivered),
                         )
             log_line = ";".join(data_log)
             path_file.write(log_line+"\n")        
