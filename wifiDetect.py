@@ -9,9 +9,12 @@ HAY QUE HACER PRUEBAS.
 import subprocess
 import platform
 import json
+import warnings
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
+
+warnings.filterwarnings("ignore")
 
 class TeamsWebhookException(Exception):
     """
@@ -39,16 +42,15 @@ class WifiDetector:
             content = json.load(file)
         
         # Checks the target SSID and change the title for every given SSID.
-        if target_ssid == "MMP":
+        if target_ssid == "Wifi-Prof":           #"MMP0366":
             content["sections"][0]["activityTitle"] = "El simulador **METI** está encendido."
-            content["sections"][0]["activityTitle"] = "https://i.imgur.com/2kLtKTy.jpg"
+            content["sections"][0]["activityImage"] = "https://i.imgur.com/2kLtKTy.jpg"
 
-        elif target_ssid == "mfs2135":
+        elif target_ssid == "RV":                  #"mfs2135":
             content["sections"][0]["activityTitle"] = "El simulador **LUCINA** está encendido."
-            content["sections"][0]["activityTitle"] = "https://i.imgur.com/Z7wwX6l.jpg."
+            content["sections"][0]["activityImage"] = "https://i.imgur.com/Z7wwX6l.jpg."
             
-        content["sections"][0]["facts"][0]["value"] = self.selected_time
-        content["sections"][0]["facts"][1]["value"] = target_ssid
+        content["sections"][0]["facts"][0]["value"] = target_ssid
         print("*"*50)
         print(content)
         print("*"*50)
