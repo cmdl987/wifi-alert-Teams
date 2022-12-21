@@ -88,7 +88,7 @@ class ReadData:
                     
                     # Generate a dict with the values from the config.csv.
                     data_config = {"last_ts": last_line[0],
-                                    "last_SSID": last_line[1].split(),
+                                    "last_SSID": last_line[1].replace(" ", "").split(","),
                                     "last_time_config": last_line[2],
                                     "last_webhook": last_line[3],
                                     }
