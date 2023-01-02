@@ -21,7 +21,6 @@ class TeamsWebhookException(Exception):
     webhook. Aparece cuando la respuesta del requests.post es diferente a 200.
     """
 
-
 class WifiDetector:
     def __init__(self, data_config):
         self.last_config_ts = data_config["last_ts"]
@@ -128,7 +127,6 @@ class WifiDetector:
             self.msg_delivered = False
             raise TeamsWebhookException(response.reason)
         
-
     def logger(self, detected_ssids):
         """
         Comprueba que existe el archivo logs.csv. Si no existe lo crea y si 
@@ -141,20 +139,6 @@ class WifiDetector:
                         )
             log_line = ";".join(data_log)
             path_file.write(log_line+"\n")        
-        # path = Path(LOG_PATH)   
-        # if path.is_file():
-        #     with open(LOG_PATH, "a") as path_file:
-        #         data_log = (self.timestamp, self.selected_time, str(self.selected_SSID), 
-        #                     str(detected_ssids), self.selected_webhook, 
-        #                     str(self.msg_delivered), 
-        #                     )
-        #         log_line = ";".join(data_log)
-        #         path_file.write(log_line+"\n")
-        # else:
-        #     with open(LOG_PATH, "w") as path_file:
-        #         header = "Date;Time_alarm;SSIDs_target;SSIDs_detected;"\
-        #                 "Webhook;msg_delivered\n"                
-        #         path_file.writelines(header)
 
     def check_network(self):
         """
