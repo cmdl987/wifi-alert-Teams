@@ -1,0 +1,28 @@
+
+{
+    "MMP0366": { 
+        "title": "El simulador **METI** está encendido.",
+        "image": "https://i.imgur.com/2kLtKTy.jpg",
+        "location": "en Hospital Virtual de Simulación."},
+
+    "mfs2135": { 
+        "title": "El simulador **LUCINA** está encendido.",
+        "image": "https://i.imgur.com/Z7wwX6l.jpg",
+        "location": "en Hospital Virtual de Simulación."},
+    
+    "VMDX": {
+        "title": "El PC del **VIMEDIX** está encendido.",
+        "image": "",
+        "location": "en Hospital Virtual de Simulación."},
+
+    "MATT": {
+        "title": "El entrenador de auscultación **MATT** está encendido.",
+        "image": "",
+        "location": "en Hospital Virtual de Simulación."},
+
+    "Croqueta&Empanadilla": {
+        "title": "La red wifi **Croqueta&Empanadilla** está encendida.",
+        "image": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.lacasadeel.net%2Fwp-content%2Fuploads%2F2014%2F03%2FCroqueta-y-Empanadilla-cover.jpg&f=1&nofb=1&ipt=84a364abd28cc568491cda2c8465fbf83c2d3b7cfebe4577cccddd705a41c921&ipo=images",
+        "location": "en Hospital Virtual de Simulación."}
+}
+

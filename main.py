@@ -4,7 +4,7 @@ LO HACE DESDE LA PROPIA CLASE.
 TENGO QUE REVISAR.
 """
 
-from wifiDetect import WifiDetector
+from wifi_detector import WifiDetector
 from data_loader import DataLoader 
 
 if __name__ == "__main__":

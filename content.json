@@ -2,14 +2,14 @@
   "@type": "ActionCard",
   "@context": "http://schema.org/extensions",
   "themeColor": "0076D7",
-  "summary": "Aviso redes Wi-Fi",
+  "summary": "Wifi alert running",
   "sections": [{
-      "activityTitle": "Un simulador se encuentra encendido",
-      "activitySubtitle": "en Hospital Virtual de Simulación, UAX.",
-      "activityImage": "https://i.imgur.com/Z7wwX6l.jpg",
+      "activityTitle": "A network has been found.",
+      "activitySubtitle": "",
+      "activityImage": "https://cdn4.iconfinder.com/data/icons/ui-vol-01/32/22-512.png",
       "facts": [{
-          "name": "Red detectada",
-          "value": "Red encendida"
+          "name": "Network detected",
+          "value": ""
       }],
       "markdown": true
   }]
