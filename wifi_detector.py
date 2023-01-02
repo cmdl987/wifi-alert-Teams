@@ -1,7 +1,7 @@
 """ 
 wifi_detector.py
 This source code is part of Wifi-Alert program.
-__author__: Cristobal Moreno
+__author__: Cristobal Moreno (@cmdl987)
 __modified__: 19/12/2022
 """
 

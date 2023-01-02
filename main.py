@@ -1,7 +1,8 @@
-"""
-DESDE .SEND_TEAMS() ENVÍA EL POST CON EL WEBHOOK Y EL CONTENT MANUAL, PERO NO
-LO HACE DESDE LA PROPIA CLASE. 
-TENGO QUE REVISAR.
+""" 
+main.py
+This is the main part where is intented to run the Wifi-Alert program.
+__author__: Cristobal Moreno (@cmdl987)
+__modified__: 19/12/2022
 """
 
 from wifi_detector import WifiDetector
