@@ -28,7 +28,8 @@ share/python-wheels/
 MANIFEST
 
 # data_files
-*.csv
+logs.csv
+config.csv
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

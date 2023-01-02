@@ -1,9 +1,0 @@
-  BSSID              SSID                  MODE   CHAN  RATE       SIGNAL  BARS  SECURITY  
-*       E8:6E:44:06:66:80  Croqueta&Empanadilla  Infra  4     16 Mbit/s  99      ▂▄▆█  WPA2      
-        48:00:33:C5:90:19  vodafone9014          Infra  6     16 Mbit/s  60      ▂▄▆_  WPA1 WPA2 
-        30:D3:2D:5F:39:33  devolo-30d32d5f3933   Infra  11    44 Mbit/s  60      ▂▄▆_  WPA2      
-        44:48:B9:A6:39:E0  MOVISTAR_39E0         Infra  1     16 Mbit/s  54      ▂▄__  WPA2      
-        84:AA:9C:01:08:2F  MOVISTAR_082E         Infra  11    16 Mbit/s  50      ▂▄__  WPA2      
-        D4:F8:29:A7:AF:C0  MiFibra-AFC0          Infra  6     16 Mbit/s  48      ▂▄__  WPA2      
-        4C:1B:86:DB:E8:02  MiFibra-E800          Infra  6     16 Mbit/s  47      ▂▄__  WPA2      
-        80:E1:BF:49:41:4C  DIGI-h3Pa             Infra  4     16 Mbit/s  46      ▂▄__  WPA1 WPA2 

@@ -14,7 +14,8 @@ from datetime import datetime
 from pathlib import Path
 
 class DataLoader:
-    """_summary_
+    """
+    Class for checking, creating and reading config data from different files.
     """
     def __init__(self, CONFIG_PATH="config.csv", LOG_PATH="logs.csv" ):
         self.config_path = CONFIG_PATH
@@ -134,6 +135,7 @@ class DataLoader:
         with open(self.config_path, "w") as file:
             header = "ts; SSID_list; alarm_time; web_hook\n"
             file.write(header)
+
         print(f"A new config file has been created as {self.log_path}.")
 
     def set_data(self):
@@ -174,15 +176,15 @@ class DataLoader:
                                     }
                     
                     # Print statement of the previous used parameters.
-                    print("-"*70)
-                    print("Last config from: {}".format(
+                    print("-"*70,"\nLAST USED CONFIGURATION\n", "-"*70)
+                    print("\tLast config from: {}".format(
                                                 data_config["last_ts"]))
-                    print("Last networks: {}".format(
+                    print("\tLast networks:\t  {}".format(
                                                 data_config["last_SSID"]))
-                    print("Last alarm time: {}".format(
+                    print("\tLast alarm time:  {}".format(
                                                 data_config["last_time_config"]))
                     shorted_webhook = data_config["last_webhook"][-10:]
-                    print("Last webhook: ...{}".format(
+                    print("\tLast webhook:\t ...{}".format(
                                                     shorted_webhook))
                     print("-"*70)
                     

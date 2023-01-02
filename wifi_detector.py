@@ -1,6 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """ 
 wifi_detector.py
 This source code is part of Wifi-Alert program.
+It is involved in checking for wifi networks from our wireless adapter. It also verifies if the targeted networks we are keen to detect are active or not, and 
+send an alert message to a Microsoft Teams group using a webhook.
+
 __author__: Cristobal Moreno (@cmdl987)
 __modified__: 19/12/2022
 """
@@ -25,19 +30,24 @@ class TeamsWebhookException(Exception):
     pass
 
 class WifiDetector:
-    def __init__(self, data_config):
+    """ 
+    Class that detects wifi networks, crosscheck with our configuration data and
+    send a personalized message to a specific Microsoft Teams group.
+    """
+    def __init__(self, data_config, 
+                log_path="logs.csv",
+                json_content_path="content.json", 
+                personalized_content_path="personalized_content.json"):
         self.last_config_ts = data_config["last_ts"]
         self.selected_SSID = data_config["last_SSID"]
         self.selected_time = data_config["last_time_config"]
         self.selected_webhook = str(data_config["last_webhook"]).strip()
-        self.log_path = "logs.csv"
-        self.json_content = "content.json"
-        self.p_json_content = "personalized_content2.json"
+        self.log_path = log_path
+        self.json_content = json_content_path
+        self.p_json_content = personalized_content_path
         self.msg_delivered = None
         self.timestamp = str(datetime.now().strftime("%Y-%m-%d"))
-        self.network_list = []
 
-      
     def set_content(self, target_ssid):
         """Read the content.json where all the information is allocated to 
         correctly send the message to Teams.
