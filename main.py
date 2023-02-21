@@ -14,7 +14,7 @@ from data_loader import DataLoader
 
 if __name__ == "__main__":
 
-    # Read the data config file and get lastest configuration.
+    # Read the data config file and get the latest configuration.
     new_data = DataLoader()
     last_data_config = new_data.get_data_config()
 

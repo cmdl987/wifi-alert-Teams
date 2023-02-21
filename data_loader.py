@@ -28,6 +28,10 @@ class DataLoader:
         """
         Assigns a user input to user_time and checks if the input 
         is an integer.
+
+        Returns:
+            str : string with the user time separated by ':'
+
         """
         while True:
             user_time = str(input("Enter a time when you want to detect the"
@@ -48,7 +52,12 @@ class DataLoader:
         return user_time
 
     def _set_SSID(self):
-        """Assigns a str input to user_ssid."""
+        """Assigns a str input to user_ssid.
+
+        Returns:
+            string : Name of the SSID the user wants to detect.
+        """
+
         user_ssid = input("Enter the SSID you want to check. If there is more"
                         "than one, please separate them with ','.\n")\
                         .strip().replace(" ", "")
@@ -56,7 +65,11 @@ class DataLoader:
         return user_ssid
 
     def _set_webhook_link(self):
-        """Assigns a input to user_webhook and checks if the link is correct."""
+        """Assigns a input to user_webhook and checks if the link is correct.
+
+        Returns:
+            str : string with the webhook copied by the user.
+        """
         while True:
             user_webhook = str(input("Enter the copied webhook from your Teams group:\n"))
             if user_webhook.startswith("https://"):
@@ -144,12 +157,6 @@ class DataLoader:
         triggers a method to create it. 
         In case it does exist, read the last line and ask the user to continue 
         with the selected configuration.
-        
-        Args:
-            log_path (str): default path is '/logs.csv'.
-
-        Returns:
-            str: returns the path provided.
         """
         try:
             with open(self.config_path, "r") as file:
