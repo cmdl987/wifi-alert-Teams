@@ -36,7 +36,7 @@ class DataLoader:
 
         """
         while True:
-            user_time = str(input("Enter a time when you want to detect the"
+            user_time = str(input("Enter a time when you want to detect the "
                                   "networks using the format HH:MM.\n"))
             try:
                 user_hour = int(user_time[:2])
@@ -61,8 +61,8 @@ class DataLoader:
             string : Name of the SSID the user wants to detect.
         """
 
-        user_ssid = input("Enter the SSID you want to check. If there is more"
-                          "than one, please separate them with ','.\n") \
+        user_ssid = input("Enter the SSID you want to check. If there is more "
+                          "than one, please separate them with ','. Remember it is case-sensitive!\n") \
             .strip().replace(" ", "")
 
         return user_ssid
@@ -75,11 +75,11 @@ class DataLoader:
             str : string with the webhook copied by the user.
         """
         while True:
-            user_webhook = str(input("Enter the copied webhook from your Teams group:\n"))
+            user_webhook = str(input("Enter the copied webhook from your Microsoft Teams group channel:\n"))
             if user_webhook.startswith("https://"):
                 break
             else:
-                print("Webhook format is not valid. Please, enter it again.")
+                print("Webhook format is not valid. It should start with 'https://'. Please, enter it again.")
 
         return user_webhook
 

@@ -2,8 +2,9 @@
 ![wifi-alert-logo](https://user-images.githubusercontent.com/59370680/220681919-df76e8ba-b0f8-4bcd-86c3-ae2217b58bd7.png)
 
 
-Wifi-Alert-Teams take a quick snapshot of the wifi networks around you, and warns you when a specific wifi network is 
-active at a specific time, sending a personalized message to a Microsoft Teams group channel.
+Wifi-Alert-Teams is a command-line script which takes a quick snapshot of the Wi-Fi networks around you, and warns you 
+when a specific Wi-Fi network is active at a specific time, sending a personalized message to a Microsoft Teams group 
+channel.
 
 
 ----
@@ -42,8 +43,20 @@ SSID and the content we are selected.
 
 ![teams_5](https://user-images.githubusercontent.com/59370680/220617430-2474f128-6dc0-4a89-b3f9-1b14b9670f13.png)
 
+----
+
+## Let's do it! Set up your alarm:
+The first time the script is executed, user will be asked to input the following parameters in order to set up the alarm:
+- SSID : you can add more than one SSID separated by a coma. Be careful because **it is case-sensitive.**
+- alarm-time : time format is HH:MM.
+- webhook : paste the Income Webhook you copied.
+
+Once it is configured, these config parameters would be saved on to a config file. Next time the program is executed, it
+will ask you to use the last saved configuration.
+
 
 ---
+
 ## Files generated
 
 ### Config.csv & logs.csv
