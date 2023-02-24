@@ -2,7 +2,7 @@
 ![wifi-alert-logo](https://user-images.githubusercontent.com/59370680/220681919-df76e8ba-b0f8-4bcd-86c3-ae2217b58bd7.png)
 
 
-Wifi-Alert-Teams is a command-line script which takes a quick snapshot of the Wi-Fi networks around you, and warns you 
+Wifi-Alert-Teams is a cross-platform (Windows/Linux) command line interface program which takes a quick snapshot of the Wi-Fi networks around you, and warns you 
 when a specific Wi-Fi network is active at a specific time, sending a personalized message to a Microsoft Teams group 
 channel.
 
